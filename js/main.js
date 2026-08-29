@@ -37,13 +37,21 @@ function nav(){
  const btn=document.querySelector("#menuToggle"), nav=document.querySelector("#mainNav");
  if(!btn||!nav) return;
  let lastFocused=null;
+ const onTab=trapFocus(nav);
  const close=()=>{
    nav.classList.remove("open");btn.classList.remove("open");btn.setAttribute("aria-expanded","false");
+   document.removeEventListener("keydown",onTab);
    if(lastFocused) lastFocused.focus();
  };
  btn.onclick=()=>{
    const open=nav.classList.toggle("open");btn.classList.toggle("open",open);btn.setAttribute("aria-expanded",String(open));
-   if(open){lastFocused=btn;const first=nav.querySelector("a");if(first) first.focus();}
+   if(open){
+     lastFocused=btn;
+     const first=nav.querySelector("a");
+     if(first){first.focus();document.addEventListener("keydown",onTab)}
+   } else {
+     document.removeEventListener("keydown",onTab);
+   }
  };
  nav.querySelectorAll("a").forEach(a=>a.onclick=()=>close());
  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&nav.classList.contains("open")) close()});
